@@ -1,235 +1,387 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>الجلسات القضائية | المحامي سعود العتيبي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --ink:#0a0e17; --ink2:#111827; --ink3:#1a2233;
-            --card:#1c2540; --card2:#222d48;
-            --rim:rgba(255,255,255,0.07); --rim2:rgba(255,255,255,0.12);
-            --gold:#c9a84c; --gold2:#e8c870;
-            --gold-dim:rgba(201,168,76,0.15); --gold-rim:rgba(201,168,76,0.3);
-            --text:#eef2ff; --text2:#94a3c0; --text3:#5a6a88;
-            --safe-top:env(safe-area-inset-top,44px);
-            --safe-bottom:env(safe-area-inset-bottom,20px);
-            --blue:#3b82f6; --blue-bg:rgba(59,130,246,0.12); --blue-rim:rgba(59,130,246,0.3);
-            --amber:#f59e0b; --amber-bg:rgba(245,158,11,0.12); --amber-rim:rgba(245,158,11,0.3);
-            --green:#10b981; --green-bg:rgba(16,185,129,0.12); --green-rim:rgba(16,185,129,0.3);
-            --red:#ef4444; --red-bg:rgba(239,68,68,0.12); --red-rim:rgba(239,68,68,0.3);
-        }
-        body.day {
-            --ink:#f0f4ff; --ink2:#e2e8f8; --ink3:#d8dfee;
-            --card:#ffffff; --card2:#f5f8ff;
-            --rim:rgba(0,0,0,0.07); --rim2:rgba(0,0,0,0.12);
-            --text:#0a0e17; --text2:#334155; --text3:#64748b;
-        }
-        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
-        html, body { height:100%; background:var(--ink); overflow:hidden; font-family:'IBM Plex Sans Arabic',sans-serif; color:var(--text); direction:rtl; transition:background .3s,color .3s; }
-        #app { display:flex; flex-direction:column; height:100vh; height:100dvh; max-width:430px; margin:0 auto; overflow:hidden; background:var(--ink); }
-        #hdr { flex-shrink:0; padding-top:var(--safe-top); background:var(--ink); z-index:40; }
-        .hi { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; }
-        .ht { font-family:'Amiri',serif; font-size:21px; font-weight:700; color:var(--gold2); }
-        .ha { display:flex; gap:6px; }
-        .bn { background:var(--gold); color:var(--ink); border-radius:13px; padding:9px 13px; font-size:12px; font-weight:700; cursor:pointer; }
-        .bi { width:34px; height:34px; border-radius:10px; background:var(--card); border:1px solid var(--rim2); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer; }
-        .ts { display:flex; padding:8px 8px 0; gap:3px; overflow-x:auto; }
-        .tp { flex:1; min-width:65px; padding:8px 2px; border-radius:10px; color:var(--text3); font-size:11px; font-weight:600; cursor:pointer; border:1px solid transparent; }
-        .tp.on { background:var(--gold-dim); color:var(--gold2); border-color:var(--gold-rim); }
-        #cnt { flex:1; overflow-y:auto; padding:12px 14px calc(16px + var(--safe-bottom)); }
-        .card { background:var(--card); border:1px solid var(--rim); border-radius:16px; padding:14px; margin-bottom:9px; position:relative; }
-        .ca { position:absolute; top:0; right:0; width:4px; height:100%; border-radius:0 16px 16px 0; }
-        .cn { font-family:'Amiri',serif; font-size:18px; font-weight:700; color:var(--gold2); }
-        .ctm { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
-        .cd-box { margin-top:9px; border-radius:11px; padding:9px; display:flex; justify-content:space-between; align-items:center; font-size:12px; }
-        .cd-box.urgent { background:var(--red-bg); border:1px solid var(--red-rim); color:var(--red); }
-        .cd-box.soon { background:var(--amber-bg); border:1px solid var(--amber-rim); color:var(--amber); }
-        .badge { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
-        .ov { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; justify-content:flex-end; }
-        .ob { position:absolute; inset:0; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); }
-        .sheet { position:relative; background:var(--card); border-radius:22px 22px 0 0; padding:20px; max-height:90vh; overflow-y:auto; }
-        .field { margin-bottom:12px; }
-        .field label { display:block; font-size:11px; color:var(--text3); margin-bottom:5px; }
-        .field input, .field select, .field textarea { width:100%; background:var(--ink3); border:1px solid var(--rim2); border-radius:10px; padding:10px; color:var(--text); }
-        .bg { width:100%; background:var(--gold); color:var(--ink); border-radius:12px; padding:14px; font-weight:700; cursor:pointer; border:none; margin-top:10px; }
-        .hid { display:none !important; }
-        .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--card2); padding:10px 20px; border-radius:20px; color:var(--gold2); opacity:0; transition:0.3s; z-index:1000; }
-        .toast.show { opacity:1; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="الجلسات">
+<meta name="theme-color" content="#0a0e17">
+<title>الجلسات القضائية | منظومة المحاكم</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:#0a0e17; --ink2:#111827; --ink3:#1a2233;
+  --card:#1c2540; --card2:#222d48;
+  --rim:rgba(255,255,255,0.07); --rim2:rgba(255,255,255,0.12);
+  --gold:#c9a84c; --gold2:#e8c870;
+  --gold-dim:rgba(201,168,76,0.15); --gold-rim:rgba(201,168,76,0.3);
+  --text:#eef2ff; --text2:#94a3c0; --text3:#5a6a88;
+  --safe-top:env(safe-area-inset-top,44px);
+  --safe-bottom:env(safe-area-inset-bottom,20px);
+  --blue:#3b82f6; --blue-bg:rgba(59,130,246,0.12); --blue-rim:rgba(59,130,246,0.3);
+  --amber:#f59e0b; --amber-bg:rgba(245,158,11,0.12); --amber-rim:rgba(245,158,11,0.3);
+  --green:#10b981; --green-bg:rgba(16,185,129,0.12); --green-rim:rgba(16,185,129,0.3);
+  --red:#ef4444; --red-bg:rgba(239,68,68,0.12); --red-rim:rgba(239,68,68,0.3);
+}
+body.day {
+  --ink:#f0f4ff; --ink2:#e2e8f8; --ink3:#d8dfee;
+  --card:#ffffff; --card2:#f5f8ff;
+  --rim:rgba(0,0,0,0.07); --rim2:rgba(0,0,0,0.12);
+  --text:#0a0e17; --text2:#334155; --text3:#64748b;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; background:var(--ink); overflow:hidden; font-family:'IBM Plex Sans Arabic',sans-serif; color:var(--text); direction:rtl; transition:background .3s,color .3s; }
+::-webkit-scrollbar { display:none; }
+button, input, select, textarea { font-family:inherit; border:none; outline:none; background:none; }
+input[type=date], input[type=time] { -webkit-appearance:none; color:var(--text); color-scheme:dark; }
+body.day input[type=date], body.day input[type=time] { color-scheme:light; }
+
+#app { display:flex; flex-direction:column; height:100vh; height:100dvh; max-width:430px; margin:0 auto; overflow:hidden; background:var(--ink); transition:background .3s; }
+#hdr { flex-shrink:0; padding-top:var(--safe-top); background:var(--ink); z-index:40; transition:background .3s; }
+.hi { display:flex; align-items:center; justify-content:space-between; padding:12px 18px 12px; }
+.hl { display:flex; flex-direction:column; }
+.he { font-size:10px; color:var(--text3); letter-spacing:.08em; margin-bottom:2px; }
+.ht { font-family:'Amiri',serif; font-size:21px; font-weight:700; color:var(--gold2); }
+.hs { font-size:10px; color:var(--text3); margin-top:2px; }
+.ha { display:flex; gap:6px; align-items:center; }
+.bn { display:flex; align-items:center; gap:5px; background:var(--gold); color:var(--ink); border-radius:13px; padding:9px 13px; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 4px 14px rgba(201,168,76,.35); }
+.bn:active { opacity:.85; }
+.bi { width:34px; height:34px; border-radius:10px; background:var(--card); border:1px solid var(--rim2); color:var(--text2); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.bi.on { background:var(--gold-dim); border-color:var(--gold-rim); color:var(--gold2); }
+.gd { height:1px; background:linear-gradient(90deg,transparent,var(--gold-rim),transparent); margin:0 18px; }
+.ts { display:flex; padding:8px 8px 0; gap:3px; background:var(--ink); overflow-x:auto; transition:background .3s; }
+.tp { flex:1; min-width:52px; padding:8px 2px; border-radius:10px; background:transparent; color:var(--text3); font-size:10px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:3px; border:1px solid transparent; white-space:nowrap; transition:background .15s,color .15s; }
+.tp.on { background:var(--gold-dim); color:var(--gold2); border-color:var(--gold-rim); }
+.tp .dot { width:3px; height:3px; border-radius:50%; background:currentColor; opacity:0; }
+.tp.on .dot { opacity:1; }
+#cnt { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:12px 14px calc(16px + var(--safe-bottom)); display:flex; flex-direction:column; }
+
+.toast { position:fixed; bottom:calc(24px + var(--safe-bottom)); left:50%; transform:translateX(-50%) translateY(16px); background:var(--card2); border:1px solid var(--gold-rim); border-radius:13px; padding:9px 18px; font-size:12px; font-weight:600; color:var(--gold2); z-index:999; opacity:0; transition:all .3s; pointer-events:none; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+.sg { display:grid; grid-template-columns:1fr 1fr; gap:9px; margin-bottom:14px; }
+.sc { background:var(--card); border:1px solid var(--rim); border-radius:16px; padding:14px 12px; position:relative; overflow:hidden; }
+.se { font-size:20px; margin-bottom:6px; }
+.sn { font-size:28px; font-weight:700; line-height:1; }
+.sl { font-size:10px; color:var(--text3); margin-top:4px; }
+
+.pt { display:inline-flex; align-items:center; gap:3px; padding:2px 7px; border-radius:7px; font-size:10px; font-weight:700; }
+.pt.high { background:rgba(239,68,68,.12); color:#f87171; border:1px solid rgba(239,68,68,.3); }
+.pt.med { background:rgba(245,158,11,.12); color:#fbbf24; border:1px solid rgba(245,158,11,.3); }
+.pt.low { background:rgba(16,185,129,.12); color:#34d399; border:1px solid rgba(16,185,129,.3); }
+.pt.none { background:rgba(59,130,246,.12); color:#60a5fa; border:1px solid rgba(59,130,246,.3); }
+
+.card { background:var(--card); border:1px solid var(--rim); border-radius:16px; padding:14px; margin-bottom:9px; cursor:pointer; position:relative; overflow:hidden; transition:transform .1s,border-color .15s; }
+.card:active { transform:scale(.985); border-color:var(--gold-rim); }
+.ca { position:absolute; top:0; right:0; width:4px; height:100%; border-radius:0 16px 16px 0; }
+.ct { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:9px; }
+.cn { font-family:'Amiri',serif; font-size:17px; font-weight:700; color:var(--gold2); }
+.ctp { font-size:10px; color:var(--text3); margin-top:2px; display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+.ctm { font-size:20px; font-weight:700; color:var(--text); text-align:left; font-variant-numeric:tabular-nums; }
+.cdt { font-size:10px; color:var(--text3); text-align:left; margin-top:1px; }
+
+.badge { display:inline-flex; align-items:center; padding:2px 9px; border-radius:18px; font-size:10px; font-weight:700; border:1px solid; }
+.sh { display:flex; align-items:center; gap:7px; font-size:12px; font-weight:600; color:var(--text2); margin-bottom:10px; margin-top:4px; }
+.sh::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--rim2),transparent); }
+
+.ov { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; justify-content:flex-end; }
+.ov.hid { display:none; }
+.ob { position:absolute; inset:0; background:rgba(0,0,0,.65); backdrop-filter:blur(4px); }
+.sheet { position:relative; background:var(--card); border-radius:22px 22px 0 0; border-top:1px solid var(--rim2); max-height:92vh; overflow-y:auto; padding-bottom:max(18px,var(--safe-bottom)); }
+.sh2 { width:38px; height:4px; border-radius:2px; background:var(--rim2); margin:12px auto 14px; }
+.shdr { position:sticky; top:0; background:var(--card); padding:0 18px 12px; border-bottom:1px solid var(--rim); z-index:1; }
+.shdi { display:flex; justify-content:space-between; align-items:center; }
+.sht { font-family:'Amiri',serif; font-size:20px; font-weight:700; color:var(--gold2); }
+.shc { width:30px; height:30px; border-radius:9px; background:var(--ink3); color:var(--text3); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.sbody { padding:14px 18px; }
+
+.cd-box { margin-top:9px; background:var(--ink3); border:1px solid var(--rim2); border-radius:11px; padding:9px 11px; display:flex; align-items:center; justify-content:space-between; }
+.cd-box.urgent { border-color:rgba(239,68,68,.4); background:rgba(239,68,68,.08); }
+.cd-box.ok { border-color:rgba(16,185,129,.3); background:rgba(16,185,129,.06); }
+.cdl { font-size:10px; color:var(--text3); }
+.cdt2 { font-size:14px; font-weight:700; font-variant-numeric:tabular-nums; }
+.cdt2.urgent { color:#f87171; }
+.cdt2.ok { color:#34d399; }
+
+.field { margin-bottom:14px; }
+.field label { display:block; font-size:11px; color:var(--text3); font-weight:600; margin-bottom:6px; }
+.field input, .field select, .field textarea { width:100%; background:var(--ink3); border:1.5px solid var(--rim2); border-radius:13px; padding:12px 13px; font-size:13px; color:var(--text); display:block; transition:border-color .15s; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color:var(--gold-rim); }
+.field textarea { resize:none; }
+option { background:var(--ink2); }
+
+.bg { width:100%; background:var(--gold); color:var(--ink); border-radius:14px; padding:14px; font-weight:700; font-size:14px; cursor:pointer; margin-bottom:9px; box-shadow:0 4px 18px rgba(201,168,76,.3); }
+.bg:disabled { background:var(--rim2); color:var(--text3); box-shadow:none; }
+.bgh { width:100%; background:var(--ink3); color:var(--text2); border:1px solid var(--rim2); border-radius:14px; padding:13px; font-weight:600; font-size:13px; cursor:pointer; }
+
+.empty { text-align:center; padding:48px 0; margin:auto; }
+.empty .ei { font-size:48px; margin-bottom:10px; opacity:.5; }
+.empty .et { font-size:15px; font-weight:600; color:var(--text2); }
+.empty .es { font-size:12px; color:var(--text3); margin-top:5px; }
+
+/* AI Chat Styles */
+.ai-msg { background:var(--card); border:1px solid var(--rim); border-radius:14px 14px 2px 14px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.6; max-width:85%; align-self:flex-end; color:var(--gold2); }
+.user-msg { background:var(--ink3); border:1px solid var(--rim2); border-radius:14px 14px 14px 2px; padding:12px; margin-bottom:12px; font-size:13px; line-height:1.6; max-width:85%; align-self:flex-start; }
+.chat-container { flex:1; overflow-y:auto; display:flex; flex-direction:column; padding-bottom:10px; }
+.chat-input-area { display:flex; gap:8px; margin-top:auto; }
+
+/* Task Styles */
+.task-item { display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--rim); border-radius:12px; padding:12px; margin-bottom:8px; }
+.task-item.done { opacity:0.6; text-decoration:line-through; }
+.task-check { width:20px; height:20px; border-radius:6px; border:2px solid var(--gold2); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; }
+.task-item.done .task-check { background:var(--gold2); }
+.task-item.done .task-check::after { content:'✓'; color:var(--ink); font-size:12px; font-weight:bold; }
+
+/* List Styles */
+.list-item { background:var(--card); border:1px solid var(--rim); border-radius:12px; padding:14px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;}
+.list-icon { width:36px; height:36px; background:var(--ink3); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+
+</style>
 </head>
-<body class="night">
-    <div id="app">
-        <div id="hdr">
-            <div class="hi">
-                <div>
-                    <div style="font-size:10px; color:var(--text3)">⚖️ مكتب المحامي سعود العتيبي</div>
-                    <div class="ht">الجلسات القضائية</div>
-                </div>
-                <div class="ha">
-                    <button class="bi" onclick="toggleTheme()">🌓</button>
-                    <button class="bi" id="btnNotif" onclick="toggleNotif()">🔔</button>
-                    <button class="bn" onclick="openAdd()">+ جلسة</button>
-                </div>
-            </div>
-            <div class="ts">
-                <button class="tp on" id="tb-home" onclick="go('home')">الرئيسية</button>
-                <button class="tp" id="tb-list" onclick="go('list')">الجلسات</button>
-                <button class="tp" id="tb-cal" onclick="go('cal')">التقويم</button>
-            </div>
-        </div>
-        <div id="cnt"></div>
+<body>
+<div id="app">
+  <div id="hdr">
+    <div class="hi">
+      <div class="hl">
+        <div class="he">⚖️ منظومة المحاكم</div>
+        <div class="ht">الجلسات القضائية</div>
+        <div class="hs" id="hdate"></div>
+      </div>
+      <div class="ha">
+        <button class="bi" id="btnTheme" onclick="toggleTheme()">🌙</button>
+        <button class="bi" id="btnNotif" onclick="toggleNotif()">🔔</button>
+        <button class="bn" onclick="openAdd()"><span style="font-size:15px;line-height:1">+</span>جديدة</button>
+      </div>
     </div>
-
-    <div class="ov hid" id="formSheet">
-        <div class="ob" onclick="closeForm()"></div>
-        <div class="sheet">
-            <h3 id="formTitle" style="margin-bottom:15px; font-family:'Amiri'">إضافة جلسة</h3>
-            <div class="field"><label>رقم القضية *</label><input id="fNum" type="text" oninput="chkV()"></div>
-            <div class="field"><label>المحكمة *</label><input id="fCourt" type="text" oninput="chkV()"></div>
-            <div class="field"><label>التاريخ والوقت *</label>
-                <div style="display:flex; gap:5px">
-                    <input id="fDate" type="date" style="flex:2" oninput="chkV()">
-                    <input id="fTime" type="time" style="flex:1" oninput="chkV()">
-                </div>
-            </div>
-            <div class="field"><label>نوع القضية</label><select id="fType"><option>جنائية</option><option>مدنية</option><option>تجارية</option><option>أحوال شخصية</option></select></div>
-            <div class="field"><label>ملاحظات</label><textarea id="fNotes" rows="2"></textarea></div>
-            <button class="bg" id="btnSave" onclick="saveS()" disabled>حفظ البيانات</button>
-        </div>
+    <div class="gd"></div>
+    <div class="ts">
+      <button class="tp on" id="tb-home" onclick="go('home')"><span class="dot"></span>الرئيسية</button>
+      <button class="tp" id="tb-list" onclick="go('list')"><span class="dot"></span>الجلسات</button>
+      <button class="tp" id="tb-tasks" onclick="go('tasks')"><span class="dot"></span>المهمات</button>
+      <button class="tp" id="tb-contacts" onclick="go('contacts')"><span class="dot"></span>الأطراف</button>
+      <button class="tp" id="tb-files" onclick="go('files')"><span class="dot"></span>الملفات</button>
+      <button class="tp" id="tb-ai" onclick="go('ai')"><span class="dot"></span>المستشار</button>
+      <button class="tp" id="tb-stats" onclick="go('stats')"><span class="dot"></span>التقارير</button>
     </div>
+    <div style="height:9px;background:var(--ink);transition:background .3s"></div>
+  </div>
+  <div id="cnt"></div>
+</div>
 
-    <div class="toast" id="toast"></div>
+<div class="toast" id="toast"></div>
 
-    <script>
-        // DB Config
-        var db, data = [], curTab = "home", tick, isDay = false, notifOn = false;
-        var ST = { scheduled: {lbl:"مجدولة", clr:"#3b82f6", bg:"rgba(59,130,246,0.1)"}, completed: {lbl:"منتهية", clr:"#10b981", bg:"rgba(16,185,129,0.1)"} };
+<div class="ov hid" id="formSheet">
+  <div class="ob" onclick="closeForm()"></div>
+  <div class="sheet">
+    <div class="sh2"></div>
+    <div class="shdr"><div class="shdi"><div class="sht" id="formTitle">جلسة جديدة</div><button class="shc" onclick="closeForm()">✕</button></div></div>
+    <div class="sbody">
+      <div class="field"><label>رقم القضية *</label><input id="fNum" type="text" placeholder="مثال: 2024/1234" oninput="chkV()"></div>
+      <div class="field"><label>🏛️ المحكمة *</label><input id="fCourt" type="text" placeholder="اسم المحكمة" oninput="chkV()"></div>
+      <div class="field"><label>التاريخ *</label><input id="fDate" type="date" dir="ltr" oninput="chkV()"></div>
+      <div class="field"><label>الوقت *</label><input id="fTime" type="time" dir="ltr" oninput="chkV()"></div>
+      <div class="field"><label>الحالة</label><select id="fStatus"><option value="scheduled">مجدولة</option><option value="completed">منتهية</option></select></div>
+      <button class="bg" id="btnSave" onclick="saveS()" disabled>حفظ الجلسة</button>
+      <button class="bgh" onclick="closeForm()">إلغاء</button>
+    </div>
+  </div>
+</div>
 
-        async function init() {
-            let req = indexedDB.open("JalsatDB", 1);
-            req.onupgradeneeded = e => e.target.result.createObjectStore("sessions", {keyPath: "id"});
-            req.onsuccess = async e => {
-                db = e.target.result;
-                await loadData();
-                render();
-                startTick();
-            };
-            if(localStorage.getItem('theme')==='day') toggleTheme();
-        }
+<script>
+// ── DB & STATE ──
+var db = null;
+var data = [];
+var curTab = "home";
+var isDay = false;
+var tick = null;
+var notifOn = false;
 
-        async function loadData() {
-            return new Promise(res => {
-                let tx = db.transaction("sessions", "readonly");
-                let req = tx.objectStore("sessions").getAll();
-                req.onsuccess = () => { data = req.result; res(); };
-            });
-        }
+var tasks = JSON.parse(localStorage.getItem('j_tasks') || '[]');
+var contacts = JSON.parse(localStorage.getItem('j_contacts') || '[{"id":1,"name":"النيابة العامة","type":"جهة"},{"id":2,"name":"أحمد السعيد","type":"موكل"}]');
 
-        function render() {
-            let cnt = document.getElementById('cnt');
-            let html = "";
-            let today = new Date().toISOString().split('T')[0];
+var ST = {
+  scheduled: {lbl:"مجدولة", clr:"var(--blue)", bg:"var(--blue-bg)", rim:"var(--blue-rim)"},
+  completed: {lbl:"منتهية", clr:"var(--green)", bg:"var(--green-bg)", rim:"var(--green-rim)"}
+};
+var PT = { none: {lbl:"عادية", cls:"none", icon:"🔵"} }; // Simplified for length
 
-            if (curTab === 'home') {
-                let upcoming = data.filter(s => s.date >= today).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
-                html = `<h4 style="margin-bottom:10px; color:var(--text3)">جلسات قادمة (${upcoming.length})</h4>`;
-                upcoming.forEach(s => html += card(s));
-            } else {
-                data.sort((a,b) => b.date.localeCompare(a.date)).forEach(s => html += card(s));
-            }
-            cnt.innerHTML = html || '<div style="text-align:center; padding:50px; opacity:0.5">لا يوجد بيانات</div>';
-        }
+function openDB() {
+  return new Promise(function(res, rej) {
+    var r = indexedDB.open('JalsatDB', 1);
+    r.onupgradeneeded = function(e) { e.target.result.createObjectStore('sessions', {keyPath:'id'}); };
+    r.onsuccess = function(e) { db = e.target.result; res(); };
+    r.onerror = rej;
+  });
+}
+function dbAll() {
+  return new Promise(function(res) {
+    if(!db) return res([]);
+    var r = db.transaction('sessions', 'readonly').objectStore('sessions').getAll();
+    r.onsuccess = function() { res(r.result || []); };
+  });
+}
+function dbPut(s) {
+  return new Promise(function(res) {
+    var tx = db.transaction('sessions', 'readwrite');
+    tx.objectStore('sessions').put(s);
+    tx.oncomplete = res;
+  });
+}
 
-        function card(s) {
-            let cd = cdInfo(s);
-            return `
-            <div class="card">
-                <div class="ca" style="background:${ST.scheduled.clr}"></div>
-                <div style="display:flex; justify-content:space-between">
-                    <div>
-                        <div class="cn">${s.num}</div>
-                        <div style="font-size:11px; color:var(--text3)">${s.court}</div>
-                    </div>
-                    <div class="ctm">${s.time}</div>
-                </div>
-                <div style="margin-top:8px; font-size:11px">📅 ${s.date}</div>
-                ${cd ? `<div class="cd-box ${cd.cls}"><span>${cd.lbl}</span><span style="font-weight:bold">${cd.time}</span></div>` : ''}
-            </div>`;
-        }
+// ── HELPERS ──
+function pad(n) { return String(n).padStart(2,'0'); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function bdg(s) { var c = ST[s]; return '<span class="badge" style="color:'+c.clr+';background:'+c.bg+';border-color:'+c.rim+'">' + c.lbl + '</span>'; }
 
-        function cdInfo(s) {
-            let now = new Date(), tgt = new Date(s.date + 'T' + s.time);
-            let diff = tgt - now;
-            if (diff < -3600000) return null;
-            let abs = Math.abs(diff);
-            let h = Math.floor(abs/3600000), m = Math.floor((abs%3600000)/60000), sec = Math.floor((abs%60000)/1000);
-            let timeStr = `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-            return {
-                cls: diff < 3600000 ? 'urgent' : 'soon',
-                lbl: diff < 0 ? 'بدأت منذ' : 'متبقي',
-                time: timeStr
-            };
-        }
+function cdInfo(s) {
+  if (s.status === 'completed') return null;
+  var diff = new Date(s.date+'T'+s.time+':00') - new Date();
+  if (diff < 0) {
+    var e = Math.abs(diff);
+    return {passed:true, time:pad(Math.floor(e/3600000))+':'+pad(Math.floor((e%3600000)/60000))+':'+pad(Math.floor((e%60000)/1000)) };
+  }
+  return {passed:false, time:pad(Math.floor(diff/3600000))+':'+pad(Math.floor((diff%3600000)/60000))+':'+pad(Math.floor((diff%60000)/1000)) };
+}
 
-        function startTick() { setInterval(render, 1000); }
+// ── UI ──
+function toggleTheme() {
+  isDay = !isDay;
+  document.body.classList.toggle('day', isDay);
+  document.getElementById('btnTheme').textContent = isDay ? '☀️' : '🌙';
+}
+function toast(msg) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(function() { el.classList.remove('show'); }, 2000);
+}
+function toggleNotif() { notifOn = !notifOn; toast(notifOn ? "🔔 تم التفعيل" : "🔕 تم الإيقاف"); document.getElementById('btnNotif').textContent = notifOn?'🔔':'🔕';}
 
-        function go(t) {
-            curTab = t;
-            document.querySelectorAll('.tp').forEach(b => b.classList.toggle('on', b.id === 'tb-'+t));
-            render();
-        }
+function go(t) {
+  curTab = t;
+  document.querySelectorAll('.tp').forEach(function(b) { b.classList.toggle('on', b.id === 'tb-'+t); });
+  render();
+}
 
-        function openAdd() { document.getElementById('formSheet').classList.remove('hid'); }
-        function closeForm() { document.getElementById('formSheet').classList.add('hid'); }
+function render() {
+  var cnt = document.getElementById('cnt');
+  if(curTab === 'home') cnt.innerHTML = buildHome();
+  else if(curTab === 'list') cnt.innerHTML = buildList();
+  else if(curTab === 'tasks') cnt.innerHTML = buildTasks();
+  else if(curTab === 'contacts') cnt.innerHTML = buildContacts();
+  else if(curTab === 'files') cnt.innerHTML = buildFiles();
+  else if(curTab === 'ai') cnt.innerHTML = buildAI();
+  else if(curTab === 'stats') cnt.innerHTML = buildStats();
+}
 
-        async function saveS() {
-            let s = {
-                id: Date.now(),
-                num: document.getElementById('fNum').value,
-                court: document.getElementById('fCourt').value,
-                date: document.getElementById('fDate').value,
-                time: document.getElementById('fTime').value,
-                type: document.getElementById('fType').value,
-                notes: document.getElementById('fNotes').value
-            };
-            let tx = db.transaction("sessions", "readwrite");
-            tx.objectStore("sessions").add(s);
-            tx.oncomplete = async () => {
-                await loadData();
-                closeForm();
-                toast("✅ تم الحفظ");
-                render();
-            };
-        }
+// ── PAGES ──
+function buildHome() {
+  var h = '<div class="sg"><div class="sc"><div class="se">📅</div><div class="sn">'+data.length+'</div><div class="sl">إجمالي الجلسات</div></div>';
+  var td = today(), n = data.filter(function(s){return s.date===td;}).length;
+  h += '<div class="sc"><div class="se">🔴</div><div class="sn">'+n+'</div><div class="sl">جلسات اليوم</div></div></div>';
+  var upc = data.filter(function(s){return s.date>=td && s.status==='scheduled';}).sort(function(a,b){return (a.date+a.time).localeCompare(b.date+b.time);});
+  if(upc.length) { h += '<div class="sh"><span>📌</span> الجلسات القادمة</div>'; upc.forEach(function(s){ h += buildCard(s); }); }
+  else { h += '<div class="empty"><div class="ei">📭</div><div class="et">لا توجد جلسات قادمة</div></div>'; }
+  return h;
+}
 
-        function chkV() {
-            let v = document.getElementById('fNum').value && document.getElementById('fCourt').value && document.getElementById('fDate').value;
-            document.getElementById('btnSave').disabled = !v;
-        }
+function buildList() {
+  var h = '';
+  data.sort(function(a,b){return b.date.localeCompare(a.date);}).forEach(function(s){ h += buildCard(s); });
+  return h || '<div class="empty"><div class="ei">📂</div><div class="et">سجل الجلسات فارغ</div></div>';
+}
 
-        function toggleTheme() {
-            isDay = !isDay;
-            document.body.className = isDay ? 'day' : 'night';
-            localStorage.setItem('theme', isDay ? 'day' : 'night');
-        }
+function buildTasks() {
+  var h = '<div class="sh"><span>✅</span> مهام المكتب</div>';
+  h += '<div style="display:flex;gap:5px;margin-bottom:15px"><input type="text" id="newTask" class="field" style="margin:0;flex:1;background:var(--card)" placeholder="مهمة جديدة..."><button class="bg" style="width:auto;margin:0;padding:0 15px" onclick="addTask()">إضافة</button></div>';
+  tasks.forEach(function(t, i) {
+    h += '<div class="task-item '+(t.done?'done':'')+'" onclick="toggleTask('+i+')"><div class="task-check"></div><div style="flex:1;font-size:14px;font-weight:600">'+t.title+'</div><button class="bgh" style="width:auto;padding:5px 10px;font-size:10px" onclick="event.stopPropagation();delTask('+i+')">حذف</button></div>';
+  });
+  if(!tasks.length) h += '<div class="empty"><div class="ei">📋</div><div class="et">لا توجد مهام حالياً</div></div>';
+  return h;
+}
 
-        function toast(m) {
-            let t = document.getElementById('toast');
-            t.textContent = m; t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
-        }
+function buildContacts() {
+  var h = '<div class="sh"><span>👥</span> دليل الأطراف والموكلين</div>';
+  contacts.forEach(function(c) {
+    h += '<div class="list-item"><div style="display:flex;align-items:center;gap:12px"><div class="list-icon">👤</div><div><div style="font-size:14px;font-weight:bold">'+c.name+'</div><div style="font-size:11px;color:var(--text3)">'+c.type+'</div></div></div><button class="bgh" style="width:auto;padding:5px 12px;font-size:11px">تواصل</button></div>';
+  });
+  return h;
+}
 
-        function toggleNotif() {
-            Notification.requestPermission().then(p => {
-                if(p==='granted') toast("🔔 الإشعارات مفعلة");
-            });
-        }
+function buildFiles() {
+  return '<div class="sh"><span>📁</span> ملفات ومذكرات القضايا</div><div class="empty"><div class="ei">📄</div><div class="et">أرشيف الملفات</div><div class="es">اربط مذكرات الدفاع والأحكام بجلساتك هنا</div><button class="bg" style="margin-top:15px">رفع ملف جديد</button></div>';
+}
 
-        init();
-    </script>
+function buildAI() {
+  var h = '<div class="chat-container">';
+  h += '<div class="ai-msg">أهلاً بك أستاذ سعود. أنا المستشار الذكي الخاص بمكتبك. كيف يمكنني مساعدتك في صياغة مذكرة، أو البحث في الأنظمة السعودية اليوم؟</div>';
+  h += '</div>';
+  h += '<div class="chat-input-area"><input type="text" class="field" style="margin:0;flex:1;background:var(--card)" placeholder="اكتب استشارتك هنا..."><button class="bg" style="width:auto;margin:0;padding:0 15px">إرسال</button></div>';
+  return h;
+}
+
+function buildStats() {
+  var total = data.length;
+  var comp = data.filter(function(s){return s.status==='completed'}).length;
+  var sched = data.filter(function(s){return s.status==='scheduled'}).length;
+  var h = '<div class="sh"><span>📊</span> تقرير الإنجاز</div>';
+  h += '<div class="sg">';
+  h += '<div class="sc"><div class="se">⚖️</div><div class="sn">'+total+'</div><div class="sl">إجمالي القضايا</div></div>';
+  h += '<div class="sc"><div class="se">✅</div><div class="sn">'+comp+'</div><div class="sl">منتهية ومحكومة</div></div>';
+  h += '<div class="sc"><div class="se">⏳</div><div class="sn">'+sched+'</div><div class="sl">قيد الترافع</div></div>';
+  h += '</div>';
+  return h;
+}
+
+function buildCard(s) {
+  var cd = cdInfo(s);
+  return '<div class="card">' +
+    '<div class="ca" style="background:'+ST[s.status].clr+'"></div>' +
+    '<div class="ct"><div class="cn">'+s.num+'<div class="ctp">🏛️ '+s.court+'</div></div>' +
+    '<div><div class="ctm">'+s.time+'</div><div class="cdt">'+s.date+'</div></div></div>' +
+    '<div style="margin-bottom:8px">' + bdg(s.status) + '</div>' +
+    (cd ? '<div class="cd-box '+(cd.passed?'urgent':'ok')+'"><span class="cdl">'+(cd.passed?'منذ':'متبقي')+'</span><span class="cdt2 '+(cd.passed?'urgent':'ok')+'">'+cd.time+'</span></div>' : '') +
+  '</div>';
+}
+
+// ── ACTIONS ──
+function openAdd() { document.getElementById('formSheet').classList.remove('hid'); document.getElementById('fDate').value = today(); }
+function closeForm() { document.getElementById('formSheet').classList.add('hid'); }
+function chkV() { var v = document.getElementById('fNum').value && document.getElementById('fCourt').value && document.getElementById('fDate').value && document.getElementById('fTime').value; document.getElementById('btnSave').disabled = !v; }
+
+async function saveS() {
+  var s = {
+    id: Date.now(),
+    num: document.getElementById('fNum').value,
+    court: document.getElementById('fCourt').value,
+    date: document.getElementById('fDate').value,
+    time: document.getElementById('fTime').value,
+    status: document.getElementById('fStatus').value
+  };
+  await dbPut(s); data = await dbAll();
+  closeForm(); toast("✅ تم الحفظ"); render();
+}
+
+function addTask() {
+  var inp = document.getElementById('newTask');
+  if(!inp.value.trim()) return;
+  tasks.push({title: inp.value, done: false});
+  localStorage.setItem('j_tasks', JSON.stringify(tasks));
+  render();
+}
+function toggleTask(i) { tasks[i].done = !tasks[i].done; localStorage.setItem('j_tasks', JSON.stringify(tasks)); render(); }
+function delTask(i) { tasks.splice(i, 1); localStorage.setItem('j_tasks', JSON.stringify(tasks)); render(); }
+
+// ── START ──
+window.onload = async function() {
+  await openDB(); data = await dbAll();
+  setInterval(function() {
+    document.getElementById('hdate').textContent = new Date().toLocaleDateString('ar-SA',{weekday:'long',year:'numeric',month:'short',day:'numeric'});
+    if(curTab==='home' || curTab==='list') render();
+  }, 1000);
+  render();
+};
+</script>
 </body>
 </html>
