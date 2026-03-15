@@ -5,202 +5,231 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="الجلسات">
-    <meta name="theme-color" content="#0a0e17">
     <title>الجلسات القضائية | المحامي سعود العتيبي</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --ink:#0a0e17; --ink2:#111827; --ink3:#1a2233;
             --card:#1c2540; --card2:#222d48;
             --rim:rgba(255,255,255,0.07); --rim2:rgba(255,255,255,0.12);
-            --gold:#c9a84c; --gold2:#e8c870; --gold-dim:rgba(201,168,76,0.15); --gold-rim:rgba(201,168,76,0.3);
+            --gold:#c9a84c; --gold2:#e8c870;
+            --gold-dim:rgba(201,168,76,0.15); --gold-rim:rgba(201,168,76,0.3);
             --text:#eef2ff; --text2:#94a3c0; --text3:#5a6a88;
-            --safe-top:env(safe-area-inset-top,44px); --safe-bottom:env(safe-area-inset-bottom,20px);
-            --p-none:#3b82f6; --danger: #ef4444;
+            --safe-top:env(safe-area-inset-top,44px);
+            --safe-bottom:env(safe-area-inset-bottom,20px);
+            --blue:#3b82f6; --blue-bg:rgba(59,130,246,0.12); --blue-rim:rgba(59,130,246,0.3);
+            --amber:#f59e0b; --amber-bg:rgba(245,158,11,0.12); --amber-rim:rgba(245,158,11,0.3);
+            --green:#10b981; --green-bg:rgba(16,185,129,0.12); --green-rim:rgba(16,185,129,0.3);
+            --red:#ef4444; --red-bg:rgba(239,68,68,0.12); --red-rim:rgba(239,68,68,0.3);
         }
-        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-font-smoothing:antialiased; }
-        html, body { height:100%; background:var(--ink); overflow:hidden; font-family:'IBM Plex Sans Arabic', sans-serif; color:var(--text); direction:rtl; }
-        #app { display:flex; flex-direction:column; height:100vh; height:100dvh; max-width:430px; margin:0 auto; position:relative; overflow:hidden; background:var(--ink); border-left:1px solid var(--rim); border-right:1px solid var(--rim); }
+        body.day {
+            --ink:#f0f4ff; --ink2:#e2e8f8; --ink3:#d8dfee;
+            --card:#ffffff; --card2:#f5f8ff;
+            --rim:rgba(0,0,0,0.07); --rim2:rgba(0,0,0,0.12);
+            --text:#0a0e17; --text2:#334155; --text3:#64748b;
+        }
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+        html, body { height:100%; background:var(--ink); overflow:hidden; font-family:'IBM Plex Sans Arabic',sans-serif; color:var(--text); direction:rtl; transition:background .3s,color .3s; }
+        #app { display:flex; flex-direction:column; height:100vh; height:100dvh; max-width:430px; margin:0 auto; overflow:hidden; background:var(--ink); }
         #hdr { flex-shrink:0; padding-top:var(--safe-top); background:var(--ink); z-index:40; }
-        .hdr-inner { display:flex; align-items:center; justify-content:space-between; padding:12px 20px 14px; }
-        .hdr-title { font-family:'Amiri', serif; font-size:22px; font-weight:700; color:var(--gold2); }
-        .hdr-sub { font-size:11px; color:var(--text3); }
-        .btn-new { display:flex; align-items:center; gap:6px; background:var(--gold); color:var(--ink); border-radius:14px; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 16px rgba(201,168,76,0.35); border:none; }
-        .tab-strip { display:flex; padding:10px 10px 0; gap:4px; background:var(--ink); }
-        .tab-pill { flex:1; padding:9px 4px; border-radius:12px; background:transparent; color:var(--text3); font-size:11px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:4px; border:1px solid transparent; }
-        .tab-pill.active { background:var(--gold-dim); color:var(--gold2); border-color:var(--gold-rim); }
-        #content { flex:1; overflow-y:auto; padding:14px 16px calc(20px + var(--safe-bottom)); }
-        .s-card { background:var(--card); border:1px solid var(--rim); border-radius:18px; padding:16px; margin-bottom:12px; position:relative; overflow:hidden; border-right:4px solid var(--p-none); }
-        .s-num { font-family:'Amiri', serif; font-size:18px; color:var(--gold2); font-weight:700; }
-        .s-parties { font-size:12px; color:var(--text2); background:var(--ink3); border-radius:10px; padding:8px 10px; margin:10px 0; }
-        .s-notes-box { font-size:11px; color:var(--text3); background:rgba(0,0,0,0.15); border-radius:8px; padding:10px; margin-top:10px; border-top:1px solid var(--rim); }
-        .countdown-box { margin-top:10px; padding:10px; border-radius:12px; font-size:12px; display:flex; justify-content:space-between; align-items:center; }
-        .countdown-box.urgent { background:rgba(239,68,68,0.1); color:#f87171; border:1px solid rgba(239,68,68,0.2); }
-        .countdown-box.ok { background:rgba(16,185,129,0.1); color:#34d399; border:1px solid rgba(16,185,129,0.2); }
-        .overlay { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; justify-content:flex-end; }
-        .ov-bg { position:absolute; inset:0; background:rgba(0,0,0,0.65); backdrop-filter:blur(4px); }
-        .sheet { position:relative; background:var(--card); border-radius:24px 24px 0 0; padding-bottom:var(--safe-bottom); max-height:90vh; overflow-y:auto; }
-        .field { margin-bottom:15px; padding:0 20px; }
-        .field label { display:block; font-size:12px; color:var(--text3); margin-bottom:5px; }
-        .field input, .field textarea { width:100%; background:var(--ink3); border:1px solid var(--rim2); border-radius:12px; padding:12px; color:var(--text); font-family:inherit; }
-        .field textarea { height:80px; resize:none; }
-        .hidden { display:none !important; }
-        .btn-gold { width:90%; margin:10px 5%; background:var(--gold); color:var(--ink); padding:16px; border-radius:16px; font-weight:700; border:none; cursor:pointer; }
-        .btn-danger-outline { background:none; border:1px solid var(--danger); color:var(--danger); padding:10px 20px; border-radius:12px; cursor:pointer; font-weight:600; margin-top:20px; font-family:inherit; font-size:12px;}
+        .hi { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; }
+        .ht { font-family:'Amiri',serif; font-size:21px; font-weight:700; color:var(--gold2); }
+        .ha { display:flex; gap:6px; }
+        .bn { background:var(--gold); color:var(--ink); border-radius:13px; padding:9px 13px; font-size:12px; font-weight:700; cursor:pointer; }
+        .bi { width:34px; height:34px; border-radius:10px; background:var(--card); border:1px solid var(--rim2); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+        .ts { display:flex; padding:8px 8px 0; gap:3px; overflow-x:auto; }
+        .tp { flex:1; min-width:65px; padding:8px 2px; border-radius:10px; color:var(--text3); font-size:11px; font-weight:600; cursor:pointer; border:1px solid transparent; }
+        .tp.on { background:var(--gold-dim); color:var(--gold2); border-color:var(--gold-rim); }
+        #cnt { flex:1; overflow-y:auto; padding:12px 14px calc(16px + var(--safe-bottom)); }
+        .card { background:var(--card); border:1px solid var(--rim); border-radius:16px; padding:14px; margin-bottom:9px; position:relative; }
+        .ca { position:absolute; top:0; right:0; width:4px; height:100%; border-radius:0 16px 16px 0; }
+        .cn { font-family:'Amiri',serif; font-size:18px; font-weight:700; color:var(--gold2); }
+        .ctm { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
+        .cd-box { margin-top:9px; border-radius:11px; padding:9px; display:flex; justify-content:space-between; align-items:center; font-size:12px; }
+        .cd-box.urgent { background:var(--red-bg); border:1px solid var(--red-rim); color:var(--red); }
+        .cd-box.soon { background:var(--amber-bg); border:1px solid var(--amber-rim); color:var(--amber); }
+        .badge { padding:2px 8px; border-radius:10px; font-size:10px; font-weight:700; }
+        .ov { position:fixed; inset:0; z-index:200; display:flex; flex-direction:column; justify-content:flex-end; }
+        .ob { position:absolute; inset:0; background:rgba(0,0,0,.7); backdrop-filter:blur(4px); }
+        .sheet { position:relative; background:var(--card); border-radius:22px 22px 0 0; padding:20px; max-height:90vh; overflow-y:auto; }
+        .field { margin-bottom:12px; }
+        .field label { display:block; font-size:11px; color:var(--text3); margin-bottom:5px; }
+        .field input, .field select, .field textarea { width:100%; background:var(--ink3); border:1px solid var(--rim2); border-radius:10px; padding:10px; color:var(--text); }
+        .bg { width:100%; background:var(--gold); color:var(--ink); border-radius:12px; padding:14px; font-weight:700; cursor:pointer; border:none; margin-top:10px; }
+        .hid { display:none !important; }
+        .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:var(--card2); padding:10px 20px; border-radius:20px; color:var(--gold2); opacity:0; transition:0.3s; z-index:1000; }
+        .toast.show { opacity:1; }
     </style>
 </head>
-<body>
-
-<div id="app">
-    <div id="hdr">
-        <div class="hdr-inner">
-            <div>
-                <div class="hdr-title">الجلسات القضائية</div>
-                <div class="hdr-sub" id="hdr-date">--:--</div>
+<body class="night">
+    <div id="app">
+        <div id="hdr">
+            <div class="hi">
+                <div>
+                    <div style="font-size:10px; color:var(--text3)">⚖️ مكتب المحامي سعود العتيبي</div>
+                    <div class="ht">الجلسات القضائية</div>
+                </div>
+                <div class="ha">
+                    <button class="bi" onclick="toggleTheme()">🌓</button>
+                    <button class="bi" id="btnNotif" onclick="toggleNotif()">🔔</button>
+                    <button class="bn" onclick="openAdd()">+ جلسة</button>
+                </div>
             </div>
-            <button class="btn-new" onclick="openAdd()">+ جلسة جديدة</button>
+            <div class="ts">
+                <button class="tp on" id="tb-home" onclick="go('home')">الرئيسية</button>
+                <button class="tp" id="tb-list" onclick="go('list')">الجلسات</button>
+                <button class="tp" id="tb-cal" onclick="go('cal')">التقويم</button>
+            </div>
         </div>
-        <div class="tab-strip">
-            <button class="tab-pill active" onclick="switchTab('home')">الرئيسية</button>
-            <button class="tab-pill" onclick="switchTab('list')">كل الجلسات</button>
-            <button class="tab-pill" onclick="switchTab('stats')">الإحصائيات</button>
+        <div id="cnt"></div>
+    </div>
+
+    <div class="ov hid" id="formSheet">
+        <div class="ob" onclick="closeForm()"></div>
+        <div class="sheet">
+            <h3 id="formTitle" style="margin-bottom:15px; font-family:'Amiri'">إضافة جلسة</h3>
+            <div class="field"><label>رقم القضية *</label><input id="fNum" type="text" oninput="chkV()"></div>
+            <div class="field"><label>المحكمة *</label><input id="fCourt" type="text" oninput="chkV()"></div>
+            <div class="field"><label>التاريخ والوقت *</label>
+                <div style="display:flex; gap:5px">
+                    <input id="fDate" type="date" style="flex:2" oninput="chkV()">
+                    <input id="fTime" type="time" style="flex:1" oninput="chkV()">
+                </div>
+            </div>
+            <div class="field"><label>نوع القضية</label><select id="fType"><option>جنائية</option><option>مدنية</option><option>تجارية</option><option>أحوال شخصية</option></select></div>
+            <div class="field"><label>ملاحظات</label><textarea id="fNotes" rows="2"></textarea></div>
+            <button class="bg" id="btnSave" onclick="saveS()" disabled>حفظ البيانات</button>
         </div>
     </div>
 
-    <div id="content"></div>
-</div>
+    <div class="toast" id="toast"></div>
 
-<div class="overlay hidden" id="form-sheet">
-    <div class="ov-bg" onclick="closeForm()"></div>
-    <div class="sheet">
-        <div style="width:40px; height:4px; background:var(--rim2); margin:12px auto; border-radius:2px;"></div>
-        <h3 style="text-align:center; margin-bottom:20px; font-family:'Amiri'; color:var(--gold2);">تفاصيل الجلسة والمذكرات</h3>
-        <div class="field"><label>رقم القضية</label><input id="f-num" type="text" placeholder="2026/000"></div>
-        <div class="field"><label>المحكمة</label><input id="f-court" type="text" placeholder="اسم المحكمة"></div>
-        <div class="field"><label>المدعي</label><input id="f-plnt" type="text"></div>
-        <div class="field"><label>المدعى عليه</label><input id="f-dfnd" type="text"></div>
-        <div style="display:flex; gap:10px;">
-            <div class="field" style="flex:1"><label>التاريخ</label><input id="f-date" type="date"></div>
-            <div class="field" style="flex:1"><label>الوقت</label><input id="f-time" type="time"></div>
-        </div>
-        <div class="field"><label>المذكرات والملاحظات</label><textarea id="f-notes" placeholder="اكتب مذكرات القضية هنا..."></textarea></div>
-        <button class="btn-gold" onclick="saveS()">حفظ في المنظومة</button>
-    </div>
-</div>
+    <script>
+        // DB Config
+        var db, data = [], curTab = "home", tick, isDay = false, notifOn = false;
+        var ST = { scheduled: {lbl:"مجدولة", clr:"#3b82f6", bg:"rgba(59,130,246,0.1)"}, completed: {lbl:"منتهية", clr:"#10b981", bg:"rgba(16,185,129,0.1)"} };
 
-<script>
-    let data = JSON.parse(localStorage.getItem('legal_sessions') || '[]');
-    let currentTab = 'home';
+        async function init() {
+            let req = indexedDB.open("JalsatDB", 1);
+            req.onupgradeneeded = e => e.target.result.createObjectStore("sessions", {keyPath: "id"});
+            req.onsuccess = async e => {
+                db = e.target.result;
+                await loadData();
+                render();
+                startTick();
+            };
+            if(localStorage.getItem('theme')==='day') toggleTheme();
+        }
 
-    function switchTab(t) {
-        currentTab = t;
-        document.querySelectorAll('.tab-pill').forEach((btn, i) => {
-            btn.classList.toggle('active', (i === 0 && t === 'home') || (i === 1 && t === 'list') || (i === 2 && t === 'stats'));
-        });
-        render();
-    }
+        async function loadData() {
+            return new Promise(res => {
+                let tx = db.transaction("sessions", "readonly");
+                let req = tx.objectStore("sessions").getAll();
+                req.onsuccess = () => { data = req.result; res(); };
+            });
+        }
 
-    function openAdd() { document.getElementById('form-sheet').classList.remove('hidden'); }
-    function closeForm() { document.getElementById('form-sheet').classList.add('hidden'); }
+        function render() {
+            let cnt = document.getElementById('cnt');
+            let html = "";
+            let today = new Date().toISOString().split('T')[0];
 
-    function saveS() {
-        const newS = {
-            id: Date.now(),
-            num: document.getElementById('f-num').value,
-            court: document.getElementById('f-court').value,
-            plnt: document.getElementById('f-plnt').value,
-            dfnd: document.getElementById('f-dfnd').value,
-            date: document.getElementById('f-date').value,
-            time: document.getElementById('f-time').value,
-            notes: document.getElementById('f-notes').value,
-            status: 'scheduled'
-        };
-        if(!newS.num || !newS.date) return alert("يرجى ملء رقم القضية والتاريخ");
-        data.push(newS);
-        localStorage.setItem('legal_sessions', JSON.stringify(data));
-        closeForm();
-        render();
-        ['f-num', 'f-court', 'f-plnt', 'f-dfnd', 'f-date', 'f-time', 'f-notes'].forEach(id => document.getElementById(id).value = '');
-    }
+            if (curTab === 'home') {
+                let upcoming = data.filter(s => s.date >= today).sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+                html = `<h4 style="margin-bottom:10px; color:var(--text3)">جلسات قادمة (${upcoming.length})</h4>`;
+                upcoming.forEach(s => html += card(s));
+            } else {
+                data.sort((a,b) => b.date.localeCompare(a.date)).forEach(s => html += card(s));
+            }
+            cnt.innerHTML = html || '<div style="text-align:center; padding:50px; opacity:0.5">لا يوجد بيانات</div>';
+        }
 
-    function getCD(date, time) {
-        const target = new Date(`${date}T${time || '00:00'}`);
-        const diff = target - new Date();
-        if (diff < 0) return { lbl: "انتهى الموعد", cls: "urgent" };
-        const h = Math.floor(diff / 3600000);
-        const m = Math.floor((diff % 3600000) / 60000);
-        return { lbl: `متبقي: ${h} س و ${m} د`, cls: h < 24 ? "urgent" : "ok" };
-    }
-
-    function render() {
-        const container = document.getElementById('content');
-        container.innerHTML = '';
-
-        if (currentTab === 'stats') {
-            container.innerHTML = `<div style="text-align:center; padding:60px 20px;">
-                <h2 style="color:var(--gold2); font-family:'Amiri';">إحصائيات المكتب</h2>
-                <div style="font-size:64px; color:var(--text); margin:20px 0;">${data.length}</div>
-                <p style="color:var(--text3)">إجمالي القضايا المسجلة</p>
-                <button class="btn-danger-outline" onclick="cleanOldSessions()">🗑️ مسح الجلسات المنتهية</button>
+        function card(s) {
+            let cd = cdInfo(s);
+            return `
+            <div class="card">
+                <div class="ca" style="background:${ST.scheduled.clr}"></div>
+                <div style="display:flex; justify-content:space-between">
+                    <div>
+                        <div class="cn">${s.num}</div>
+                        <div style="font-size:11px; color:var(--text3)">${s.court}</div>
+                    </div>
+                    <div class="ctm">${s.time}</div>
+                </div>
+                <div style="margin-top:8px; font-size:11px">📅 ${s.date}</div>
+                ${cd ? `<div class="cd-box ${cd.cls}"><span>${cd.lbl}</span><span style="font-weight:bold">${cd.time}</span></div>` : ''}
             </div>`;
-            return;
         }
 
-        let list = (currentTab === 'home') 
-            ? data.filter(s => new Date(s.date).toDateString() === new Date().toDateString())
-            : data;
-
-        if(list.length === 0) {
-            container.innerHTML = `<p style="text-align:center; color:var(--text3); margin-top:60px;">لا توجد جلسات</p>`;
-            return;
+        function cdInfo(s) {
+            let now = new Date(), tgt = new Date(s.date + 'T' + s.time);
+            let diff = tgt - now;
+            if (diff < -3600000) return null;
+            let abs = Math.abs(diff);
+            let h = Math.floor(abs/3600000), m = Math.floor((abs%3600000)/60000), sec = Math.floor((abs%60000)/1000);
+            let timeStr = `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+            return {
+                cls: diff < 3600000 ? 'urgent' : 'soon',
+                lbl: diff < 0 ? 'بدأت منذ' : 'متبقي',
+                time: timeStr
+            };
         }
 
-        list.sort((a,b) => new Date(`${a.date}T${a.time || '00:00'}`) - new Date(`${b.date}T${b.time || '00:00'}`));
+        function startTick() { setInterval(render, 1000); }
 
-        list.forEach(s => {
-            const cd = getCD(s.date, s.time);
-            const card = document.createElement('div');
-            card.className = `s-card`;
-            card.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="s-num">${s.num}</span>
-                    <span style="font-size:12px; color:var(--gold2)">${s.date} | ${s.time || '--:--'}</span>
-                </div>
-                <div class="s-parties">⚖️ ${s.plnt} <b>ضد</b> ${s.dfnd}</div>
-                <div style="font-size:11px; color:var(--text3)">🏫 المحكمة: ${s.court || 'غير محددة'}</div>
-                ${s.notes ? `<div class="s-notes-box"><b>المذكرات:</b><br>${s.notes}</div>` : ''}
-                <div class="countdown-box ${cd.cls}">
-                    <span>${cd.lbl}</span>
-                    <button onclick="deleteS(${s.id})" style="background:none; border:none; color:var(--text3); font-size:10px; cursor:pointer;">[حذف]</button>
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    function deleteS(id) {
-        if(confirm('هل تريد حذف هذه الجلسة؟')) {
-            data = data.filter(s => s.id !== id);
-            localStorage.setItem('legal_sessions', JSON.stringify(data));
+        function go(t) {
+            curTab = t;
+            document.querySelectorAll('.tp').forEach(b => b.classList.toggle('on', b.id === 'tb-'+t));
             render();
         }
-    }
 
-    function cleanOldSessions() {
-        const todayStr = new Date().toISOString().split('T')[0];
-        if(confirm(`هل تريد مسح جميع الجلسات القديمة؟`)) {
-            data = data.filter(s => s.date >= todayStr);
-            localStorage.setItem('legal_sessions', JSON.stringify(data));
-            render();
+        function openAdd() { document.getElementById('formSheet').classList.remove('hid'); }
+        function closeForm() { document.getElementById('formSheet').classList.add('hid'); }
+
+        async function saveS() {
+            let s = {
+                id: Date.now(),
+                num: document.getElementById('fNum').value,
+                court: document.getElementById('fCourt').value,
+                date: document.getElementById('fDate').value,
+                time: document.getElementById('fTime').value,
+                type: document.getElementById('fType').value,
+                notes: document.getElementById('fNotes').value
+            };
+            let tx = db.transaction("sessions", "readwrite");
+            tx.objectStore("sessions").add(s);
+            tx.oncomplete = async () => {
+                await loadData();
+                closeForm();
+                toast("✅ تم الحفظ");
+                render();
+            };
         }
-    }
 
-    document.getElementById('hdr-date').textContent = new Date().toLocaleDateString('ar-SA', {weekday:'long', day:'numeric', month:'long'});
-    render();
-    setInterval(render, 60000);
-</script>
+        function chkV() {
+            let v = document.getElementById('fNum').value && document.getElementById('fCourt').value && document.getElementById('fDate').value;
+            document.getElementById('btnSave').disabled = !v;
+        }
 
+        function toggleTheme() {
+            isDay = !isDay;
+            document.body.className = isDay ? 'day' : 'night';
+            localStorage.setItem('theme', isDay ? 'day' : 'night');
+        }
+
+        function toast(m) {
+            let t = document.getElementById('toast');
+            t.textContent = m; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function toggleNotif() {
+            Notification.requestPermission().then(p => {
+                if(p==='granted') toast("🔔 الإشعارات مفعلة");
+            });
+        }
+
+        init();
+    </script>
 </body>
 </html>
