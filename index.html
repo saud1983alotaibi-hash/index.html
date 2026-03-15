@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<title>مكتب المحامي سعود | النظام المتكامل</title>
+<title>نظام القضايا | المحامي سعود العتيبي</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -25,263 +25,224 @@ body.day {
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
 html, body { height:100%; background:var(--ink); overflow:hidden; font-family:'IBM Plex Sans Arabic',sans-serif; color:var(--text); direction:rtl; transition:all .3s; }
 
-#app { display:flex; flex-direction:column; height:100vh; height:100dvh; max-width:430px; margin:0 auto; background:var(--ink); }
-#hdr { flex-shrink:0; padding-top:var(--safe-top); background:var(--ink); z-index:40; }
+#app { display:flex; flex-direction:column; height:100vh; height:100dvh; max-width:430px; margin:0 auto; background:var(--ink); position:relative; }
+#hdr { flex-shrink:0; padding-top:var(--safe-top); background:var(--ink); z-index:40; border-bottom:1px solid var(--rim); }
 .hi { display:flex; align-items:center; justify-content:space-between; padding:12px 18px; }
-.ht { font-family:'Amiri',serif; font-size:21px; font-weight:700; color:var(--gold2); }
-.ha { display:flex; gap:6px; }
-.bi { width:34px; height:34px; border-radius:10px; background:var(--card); border:1px solid var(--rim2); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer; }
-.bn { background:var(--gold); color:var(--ink); border-radius:12px; padding:8px 14px; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 4px 12px rgba(201,168,76,.3); }
+.ht { font-family:'Amiri',serif; font-size:22px; font-weight:700; color:var(--gold2); }
+.ha { display:flex; gap:8px; }
 
-.ts { display:flex; padding:8px; gap:4px; overflow-x:auto; background:var(--ink); }
-.tp { flex-shrink:0; padding:8px 14px; border-radius:10px; color:var(--text3); font-size:11px; font-weight:600; cursor:pointer; border:1px solid transparent; white-space:nowrap; }
+.bn-add { background:var(--gold); color:var(--ink); border-radius:12px; padding:10px 16px; font-size:13px; font-weight:700; cursor:pointer; box-shadow:0 4px 15px rgba(201,168,76,0.3); border:none; display:flex; align-items:center; gap:5px; }
+.bi { width:36px; height:36px; border-radius:12px; background:var(--card); border:1px solid var(--rim2); color:var(--text2); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+/* Navigation Tabs */
+.ts { display:flex; padding:8px 12px; gap:6px; overflow-x:auto; background:var(--ink); scrollbar-width: none; }
+.ts::-webkit-scrollbar { display:none; }
+.tp { flex-shrink:0; padding:8px 16px; border-radius:12px; color:var(--text3); font-size:12px; font-weight:600; cursor:pointer; border:1px solid transparent; transition:0.2s; }
 .tp.on { background:var(--gold-dim); color:var(--gold2); border-color:var(--gold-rim); }
 
-#cnt { flex:1; overflow-y:auto; padding:15px; }
+#cnt { flex:1; overflow-y:auto; padding:16px; -webkit-overflow-scrolling:touch; }
 
-/* Cards & Items */
-.card { background:var(--card); border:1px solid var(--rim); border-radius:16px; padding:15px; margin-bottom:12px; position:relative; }
-.ct { display:flex; justify-content:space-between; align-items:flex-start; }
-.cn { font-family:'Amiri',serif; font-size:17px; font-weight:700; color:var(--gold2); }
-.badge { display:inline-block; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:700; margin-top:8px; }
+/* Case Card */
+.case-card { background:var(--card); border:1px solid var(--rim); border-radius:18px; padding:16px; margin-bottom:12px; position:relative; overflow:hidden; transition:0.2s; }
+.case-card:active { transform: scale(0.98); }
+.case-card::before { content:''; position:absolute; right:0; top:0; height:100%; width:4px; background:var(--gold); }
+.case-hdr { display:flex; justify-content:space-between; margin-bottom:10px; }
+.case-num { font-family:'Amiri',serif; font-size:18px; font-weight:700; color:var(--gold2); }
+.case-court { font-size:11px; color:var(--text3); margin-top:2px; display:flex; align-items:center; gap:4px; }
+.case-date { text-align:left; }
+.case-time { font-size:15px; font-weight:700; color:var(--text); }
+.case-day { font-size:10px; color:var(--text3); }
+.case-status { display:inline-flex; padding:4px 10px; border-radius:8px; font-size:10px; font-weight:700; margin-top:10px; background:var(--gold-dim); color:var(--gold2); border:1px solid var(--gold-rim); }
 
-.task-item { display:flex; align-items:center; gap:12px; background:var(--card); border:1px solid var(--rim); border-radius:12px; padding:12px; margin-bottom:8px; transition:opacity .2s; }
-.task-item.done { opacity:0.5; }
-.task-item.done span { text-decoration:line-through; }
-.check { width:20px; height:20px; border-radius:6px; border:2px solid var(--gold2); cursor:pointer; display:flex; align-items:center; justify-content:center; }
-.task-item.done .check { background:var(--gold2); }
-
-.list-item { background:var(--card); border:1px solid var(--rim); border-radius:12px; padding:12px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; }
-
-.field { margin-bottom:12px; }
-.field label { display:block; font-size:11px; color:var(--text3); margin-bottom:5px; }
-.field input, .field select { width:100%; background:var(--ink3); border:1px solid var(--rim2); border-radius:10px; padding:10px; color:var(--text); font-family:inherit; }
-
+/* Modal Sheet */
 .ov { position:fixed; inset:0; z-index:100; display:flex; flex-direction:column; justify-content:flex-end; }
 .ov.hid { display:none; }
-.ob { position:absolute; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); }
-.sheet { position:relative; background:var(--card); border-radius:20px 20px 0 0; padding:20px; max-height:80vh; overflow-y:auto; }
+.ob { position:absolute; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(5px); }
+.sheet { position:relative; background:var(--card); border-radius:24px 24px 0 0; padding:24px; max-height:85vh; overflow-y:auto; border-top:1px solid var(--rim2); }
+.sheet-h { width:40px; height:4px; background:var(--rim2); border-radius:2px; margin:-10px auto 20px; }
 
-.sg { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px; }
-.sc { background:var(--card2); border:1px solid var(--gold-rim); border-radius:14px; padding:15px; text-align:center; }
-.sn { font-size:24px; font-weight:bold; color:var(--gold2); }
-.sl { font-size:10px; color:var(--text3); margin-top:4px; }
+/* Forms */
+.field { margin-bottom:16px; }
+.field label { display:block; font-size:12px; color:var(--text3); margin-bottom:6px; font-weight:600; }
+.field input, .field select, .field textarea { width:100%; background:var(--ink3); border:1px solid var(--rim2); border-radius:12px; padding:14px; color:var(--text); font-family:inherit; font-size:14px; }
+.field input:focus { border-color:var(--gold); outline:none; }
 
-.toast { position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--ink); padding:8px 16px; border-radius:20px; font-size:12px; font-weight:bold; z-index:1000; display:none; }
+.bg-btn { width:100%; background:var(--gold); color:var(--ink); border-radius:14px; padding:16px; font-weight:700; font-size:15px; cursor:pointer; border:none; margin-top:10px; }
+
+/* Empty State */
+.empty { text-align:center; padding:60px 20px; color:var(--text3); }
+.empty-icon { font-size:50px; margin-bottom:15px; opacity:0.3; }
+
 </style>
 </head>
-<body class="">
+<body>
 
 <div id="app">
   <div id="hdr">
     <div class="hi">
-      <div class="ht">المكتب الرقمي ⚖️</div>
+      <div class="ht">المحامي سعود ⚖️</div>
       <div class="ha">
         <button class="bi" onclick="toggleTheme()">🌓</button>
-        <button class="bn" onclick="openForm()">+ إضافة</button>
+        <button class="bn-add" onclick="openAddCase()"><span>+</span> قضية جديدة</button>
       </div>
     </div>
     <div class="ts">
-      <button class="tp on" id="t-home" onclick="go('home')">الرئيسية</button>
-      <button class="tp" id="t-tasks" onclick="go('tasks')">المهمات</button>
-      <button class="tp" id="t-people" onclick="go('people')">الأطراف</button>
-      <button class="tp" id="t-files" onclick="go('files')">الملفات</button>
-      <button class="tp" id="t-stats" onclick="go('stats')">التقارير</button>
+      <button class="tp on" id="t-home" onclick="tab('home')">الرئيسية</button>
+      <button class="tp" id="t-cases" onclick="tab('cases')">سجل القضايا</button>
+      <button class="tp" id="t-tasks" onclick="tab('tasks')">المهمات</button>
+      <button class="tp" id="t-stats" onclick="tab('stats')">التقارير</button>
     </div>
   </div>
 
-  <div id="cnt"></div>
+  <div id="cnt">
+    </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
-<div class="ov hid" id="pop">
-  <div class="ob" onclick="closeForm()"></div>
-  <div class="sheet" id="sheetCnt"></div>
+<div class="ov hid" id="modal">
+  <div class="ob" onclick="closeModal()"></div>
+  <div class="sheet">
+    <div class="sheet-h"></div>
+    <div id="modal-content"></div>
+  </div>
 </div>
 
 <script>
-// --- Data Stores ---
-let sessions = JSON.parse(localStorage.getItem('saud_sessions') || '[]');
-let tasks = JSON.parse(localStorage.getItem('saud_tasks') || '[]');
-let people = JSON.parse(localStorage.getItem('saud_people') || '[]');
-let curTab = 'home';
+// --- إدارة البيانات ---
+let db = {
+  cases: JSON.parse(localStorage.getItem('saud_cases') || '[]'),
+  tasks: JSON.parse(localStorage.getItem('saud_tasks') || '[]')
+};
 
-// --- Core Logic ---
-function go(tab) {
-  curTab = tab;
-  document.querySelectorAll('.tp').forEach(t => t.classList.toggle('on', t.id === 't-'+tab));
+let currentTab = 'home';
+
+function saveDB() {
+  localStorage.setItem('saud_cases', JSON.stringify(db.cases));
+  localStorage.setItem('saud_tasks', JSON.stringify(db.tasks));
+}
+
+// --- التنقل ---
+function tab(name) {
+  currentTab = name;
+  document.querySelectorAll('.tp').forEach(t => t.classList.toggle('on', t.id === 't-'+name));
   render();
 }
 
 function render() {
   const cnt = document.getElementById('cnt');
-  if (curTab === 'home') renderHome(cnt);
-  if (curTab === 'tasks') renderTasks(cnt);
-  if (curTab === 'people') renderPeople(cnt);
-  if (curTab === 'files') renderFiles(cnt);
-  if (curTab === 'stats') renderStats(cnt);
+  if (currentTab === 'home') renderHome(cnt);
+  if (currentTab === 'cases') renderCases(cnt);
+  if (currentTab === 'tasks') renderTasks(cnt);
+  if (currentTab === 'stats') renderStats(cnt);
 }
 
-// --- Home (Sessions) ---
+// --- واجهة الرئيسية ---
 function renderHome(cnt) {
-  let h = '<div style="font-size:12px; color:var(--text3); margin-bottom:10px">الجلسات المجدولة</div>';
-  if(sessions.length === 0) h += '<div style="text-align:center; padding:40px; color:var(--text3)">لا يوجد جلسات مضافة</div>';
-  sessions.forEach((s, i) => {
-    h += `<div class="card">
-      <div class="ct">
-        <div class="cn">${s.num} <br><small style="font-size:10px; color:var(--text3)">🏛️ ${s.court}</small></div>
-        <div style="text-align:left"><div style="font-size:14px; font-weight:bold">${s.time}</div><div style="font-size:10px; color:var(--text3)">${s.date}</div></div>
-      </div>
-      <div class="badge" style="background:var(--gold-dim); color:var(--gold2)">${s.status === 'done' ? '✅ منتهية' : '⏳ قيد الانتظار'}</div>
-      <button onclick="delSession(${i})" style="position:absolute; bottom:15px; left:15px; background:none; color:var(--text3); font-size:10px">حذف</button>
-    </div>`;
-  });
-  cnt.innerHTML = h;
+  const today = new Date().toISOString().split('T')[0];
+  const upcoming = db.cases.filter(c => c.date >= today).sort((a,b) => a.date.localeCompare(b.date));
+  
+  let html = `<div style="margin-bottom:20px"><h2 style="font-size:16px; color:var(--text2)">جلسات قريبة 📅</h2></div>`;
+  
+  if (upcoming.length === 0) {
+    html += `<div class="empty"><div class="empty-icon">📂</div><div>لا توجد جلسات قادمة حالياً</div></div>`;
+  } else {
+    upcoming.forEach((c, idx) => html += caseCard(c, idx));
+  }
+  cnt.innerHTML = html;
 }
 
-// --- Tasks ---
-function renderTasks(cnt) {
-  let h = `
-    <div style="display:flex; gap:8px; margin-bottom:15px">
-      <input type="text" id="taskInp" placeholder="مهمة جديدة..." style="flex:1; background:var(--card); border:1px solid var(--rim2); border-radius:10px; padding:10px; color:var(--text)">
-      <button class="bn" onclick="addTask()">إضافة</button>
+// --- واجهة القضايا ---
+function renderCases(cnt) {
+  let html = `<div style="margin-bottom:20px"><h2 style="font-size:16px; color:var(--text2)">كافة القضايا ⚖️</h2></div>`;
+  if (db.cases.length === 0) {
+    html += `<div class="empty"><div class="empty-icon">🔎</div><div>السجل فارغ، أضف أول قضية الآن</div></div>`;
+  } else {
+    db.cases.forEach((c, idx) => html += caseCard(c, idx));
+  }
+  cnt.innerHTML = html;
+}
+
+function caseCard(c, idx) {
+  return `
+    <div class="case-card">
+      <div class="case-hdr">
+        <div>
+          <div class="case-num">${c.num}</div>
+          <div class="case-court">🏛️ ${c.court}</div>
+        </div>
+        <div class="case-date">
+          <div class="case-time">${c.time}</div>
+          <div class="case-day">${c.date}</div>
+        </div>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:center">
+        <div class="case-status">جلسة مجدولة</div>
+        <button onclick="deleteCase(${idx})" style="background:none; border:none; color:var(--text3); font-size:11px; cursor:pointer">حذف القضية</button>
+      </div>
     </div>
   `;
-  tasks.forEach((t, i) => {
-    h += `
-      <div class="task-item ${t.done ? 'done' : ''}">
-        <div class="check" onclick="toggleTask(${i})">${t.done ? '✓' : ''}</div>
-        <span style="flex:1; font-size:13px">${t.title}</span>
-        <button onclick="delTask(${i})" style="color:var(--text3); background:none">✕</button>
-      </div>
-    `;
-  });
-  cnt.innerHTML = h || '<div style="text-align:center; padding:40px">لا توجد مهام حالية</div>';
 }
 
-// --- People (Contacts) ---
-function renderPeople(cnt) {
-  let h = '<div style="font-size:12px; color:var(--text3); margin-bottom:10px">دليل الأطراف والموكلين</div>';
-  people.forEach((p, i) => {
-    h += `<div class="list-item">
-      <div>
-        <div style="font-size:14px; font-weight:bold">${p.name}</div>
-        <div style="font-size:10px; color:var(--gold2)">${p.role}</div>
-      </div>
-      <button class="bi" onclick="delPerson(${i})">🗑️</button>
-    </div>`;
-  });
-  cnt.innerHTML = h + `<button class="bn" style="width:100%; margin-top:10px" onclick="openPersonForm()">+ إضافة طرف جديد</button>`;
+// --- إضافة قضية جديدة ---
+function openAddCase() {
+  const modalCnt = document.getElementById('modal-content');
+  modalCnt.innerHTML = `
+    <h2 style="font-family:'Amiri',serif; color:var(--gold2); margin-bottom:20px">إضافة قضية / جلسة جديدة</h2>
+    <div class="field"><label>رقم القضية</label><input type="text" id="in-num" placeholder="مثال: 440012345"></div>
+    <div class="field"><label>اسم المحكمة / الدائرة</label><input type="text" id="in-court" placeholder="المحكمة العامة بالرياض"></div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+      <div class="field"><label>التاريخ</label><input type="date" id="in-date"></div>
+      <div class="field"><label>الوقت</label><input type="time" id="in-time"></div>
+    </div>
+    <div class="field"><label>ملاحظات إضافية</label><textarea id="in-note" rows="2"></textarea></div>
+    <button class="bg-btn" onclick="saveNewCase()">حفظ القضية في السجل</button>
+  `;
+  document.getElementById('modal').classList.remove('hid');
 }
 
-// --- Stats ---
+function saveNewCase() {
+  const num = document.getElementById('in-num').value;
+  const court = document.getElementById('in-court').value;
+  const date = document.getElementById('in-date').value;
+  const time = document.getElementById('in-time').value;
+
+  if (!num || !court || !date) {
+    alert("يرجى إكمال البيانات الأساسية");
+    return;
+  }
+
+  db.cases.push({ num, court, date, time, status: 'active' });
+  saveDB();
+  closeModal();
+  tab('cases');
+}
+
+// --- التقارير ---
 function renderStats(cnt) {
-  const completed = sessions.filter(s => s.status === 'done').length;
-  const pending = sessions.length - completed;
+  const total = db.cases.length;
+  const upcoming = db.cases.filter(c => c.date >= new Date().toISOString().split('T')[0]).length;
+  
   cnt.innerHTML = `
-    <div style="font-size:12px; color:var(--text3); margin-bottom:15px">تحليل الأداء الرقمي</div>
-    <div class="sg">
-      <div class="sc"><div class="sn">${sessions.length}</div><div class="sl">إجمالي القضايا</div></div>
-      <div class="sc"><div class="sn">${completed}</div><div class="sl">جلسات مكتملة</div></div>
-      <div class="sc"><div class="sn">${pending}</div><div class="sl">جلسات قادمة</div></div>
-      <div class="sc"><div class="sn">${tasks.filter(t => t.done).length}</div><div class="sl">مهام منجزة</div></div>
-    </div>
-    <div style="background:var(--card); padding:15px; border-radius:15px; font-size:12px; color:var(--text2); line-height:1.6">
-      أستاذ سعود، نسبة الإنجاز الحالية في المكتب هي <b>${sessions.length ? Math.round((completed/sessions.length)*100) : 0}%</b>. 
-      لديك ${tasks.filter(t => !t.done).length} مهمة مكتبية معلقة تحتاج لمتابعة.
-    </div>
-  `;
-}
-
-// --- Files ---
-function renderFiles(cnt) {
-  cnt.innerHTML = `
-    <div style="text-align:center; padding:40px">
-      <div style="font-size:40px; margin-bottom:10px">📁</div>
-      <div style="font-size:14px; font-weight:bold">أرشيف مذكرات الدفاع</div>
-      <div style="font-size:11px; color:var(--text3); margin-top:5px">سيتم ربط هذا القسم بالسحابة قريباً</div>
-      <button class="bn" style="margin-top:20px" disabled>رفع مذكرة (قريباً)</button>
+    <h2 style="font-size:16px; color:var(--text2); margin-bottom:20px">تقرير المكتب 📊</h2>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px">
+      <div style="background:var(--card); padding:20px; border-radius:18px; text-align:center; border:1px solid var(--rim)">
+        <div style="font-size:28px; font-weight:700; color:var(--gold2)">${total}</div>
+        <div style="font-size:11px; color:var(--text3)">إجمالي القضايا</div>
+      </div>
+      <div style="background:var(--card); padding:20px; border-radius:18px; text-align:center; border:1px solid var(--rim)">
+        <div style="font-size:28px; font-weight:700; color:var(--gold2)">${upcoming}</div>
+        <div style="font-size:11px; color:var(--text3)">جلسات قادمة</div>
+      </div>
     </div>
   `;
 }
 
-// --- Form Handling ---
-function openForm() {
-  const sheet = document.getElementById('sheetCnt');
-  sheet.innerHTML = `
-    <div style="font-family:'Amiri',serif; font-size:20px; font-weight:bold; color:var(--gold2); margin-bottom:15px">إضافة جلسة جديدة</div>
-    <div class="field"><label>رقم القضية</label><input type="text" id="sNum" placeholder="مثال: 45000123"></div>
-    <div class="field"><label>المحكمة</label><input type="text" id="sCourt" placeholder="المحكمة العامة بالرياض"></div>
-    <div class="sg">
-      <div class="field"><label>التاريخ</label><input type="date" id="sDate"></div>
-      <div class="field"><label>الوقت</label><input type="time" id="sTime"></div>
-    </div>
-    <button class="bn" style="width:100%; padding:12px" onclick="saveSession()">حفظ الجلسة</button>
-  `;
-  document.getElementById('pop').classList.remove('hid');
-}
-
-function openPersonForm() {
-  const sheet = document.getElementById('sheetCnt');
-  sheet.innerHTML = `
-    <div style="font-family:'Amiri',serif; font-size:20px; font-weight:bold; color:var(--gold2); margin-bottom:15px">إضافة طرف</div>
-    <div class="field"><label>الاسم الكامل</label><input type="text" id="pName"></div>
-    <div class="field"><label>الصفة</label>
-      <select id="pRole">
-        <option>موكل</option>
-        <option>خصم</option>
-        <option>شاهد</option>
-        <option>خبير</option>
-      </select>
-    </div>
-    <button class="bn" style="width:100%; padding:12px" onclick="savePerson()">حفظ البيانات</button>
-  `;
-  document.getElementById('pop').classList.remove('hid');
-}
-
-// --- Data Actions ---
-function saveSession() {
-  const s = {
-    num: document.getElementById('sNum').value,
-    court: document.getElementById('sCourt').value,
-    date: document.getElementById('sDate').value,
-    time: document.getElementById('sTime').value,
-    status: 'pending'
-  };
-  sessions.push(s);
-  localStorage.setItem('saud_sessions', JSON.stringify(sessions));
-  closeForm(); showToast('✅ تم حفظ الجلسة'); go('home');
-}
-
-function savePerson() {
-  const p = { name: document.getElementById('pName').value, role: document.getElementById('pRole').value };
-  people.push(p);
-  localStorage.setItem('saud_people', JSON.stringify(people));
-  closeForm(); showToast('👤 تمت إضافة الطرف'); go('people');
-}
-
-function addTask() {
-  const inp = document.getElementById('taskInp');
-  if(!inp.value) return;
-  tasks.push({ title: inp.value, done: false });
-  localStorage.setItem('saud_tasks', JSON.stringify(tasks));
-  render(); inp.value = '';
-}
-
-function toggleTask(i) { tasks[i].done = !tasks[i].done; localStorage.setItem('saud_tasks', JSON.stringify(tasks)); render(); }
-function delTask(i) { tasks.splice(i,1); localStorage.setItem('saud_tasks', JSON.stringify(tasks)); render(); }
-function delSession(i) { sessions.splice(i,1); localStorage.setItem('saud_sessions', JSON.stringify(sessions)); render(); }
-function delPerson(i) { people.splice(i,1); localStorage.setItem('saud_people', JSON.stringify(people)); render(); }
-
-function closeForm() { document.getElementById('pop').classList.add('hid'); }
+// --- وظائف عامة ---
+function closeModal() { document.getElementById('modal').classList.add('hid'); }
+function deleteCase(idx) { if(confirm('هل أنت متأكد من حذف هذه القضية؟')) { db.cases.splice(idx,1); saveDB(); render(); } }
 function toggleTheme() { document.body.classList.toggle('day'); }
-function showToast(m) { const t = document.getElementById('toast'); t.innerText = m; t.style.display='block'; setTimeout(()=>t.style.display='none', 2000); }
 
-// --- Init ---
-window.onload = () => {
-  render();
-};
+// --- التشغيل الأول ---
+window.onload = render;
 </script>
 </body>
 </html>
