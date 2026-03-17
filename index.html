@@ -616,7 +616,29 @@ option { background: var(--surface); }
       </div>
       <div class="field"><label>المدعي</label><input id="fPlnt" type="text" placeholder="اسم المدعي" dir="rtl"></div>
       <div class="field"><label>المدعى عليه</label><input id="fDfnd" type="text" placeholder="اسم المدعى عليه" dir="rtl"></div>
-      <div class="field"><label>التاريخ *</label><input id="fDate" type="date" dir="ltr" oninput="chkV()"></div>
+      <div class="field">
+        <label>التاريخ *</label>
+        <input id="fDate" type="date" dir="ltr" oninput="chkV();updateDateInfo(this.value)">
+        <div id="dateInfoBox" style="display:none;margin-top:8px;background:var(--surface3);border:1px solid var(--gold-a20);border-radius:10px;padding:10px 12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:6px">
+            <div style="display:flex;align-items:center;gap:7px">
+              <span style="font-size:16px">📅</span>
+              <div>
+                <div id="dateDay" style="font-size:13px;font-weight:700;color:var(--gold2)"></div>
+                <div id="dateGreg" style="font-size:10px;color:var(--text3);margin-top:1px"></div>
+              </div>
+            </div>
+            <div style="background:var(--gold-a10);border:1px solid var(--gold-a20);border-radius:8px;padding:5px 10px;text-align:center">
+              <div id="dateHijri" style="font-size:12px;font-weight:700;color:var(--gold2)"></div>
+              <div style="font-size:9px;color:var(--text3)">هجري</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;margin-top:7px">
+          <button type="button" onclick="setDateToday()" style="flex:1;background:var(--blue-a);color:var(--blue);border:1px solid rgba(64,128,224,.3);border-radius:8px;padding:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:Tajawal,sans-serif">📅 اليوم</button>
+          <button type="button" onclick="setDateTomorrow()" style="flex:1;background:var(--surface3);color:var(--text2);border:1px solid var(--border2);border-radius:8px;padding:6px;font-size:11px;font-weight:700;cursor:pointer;font-family:Tajawal,sans-serif">▶ الغد</button>
+        </div>
+      </div>
       <div class="field"><label>الوقت *</label><input id="fTime" type="time" dir="ltr" oninput="chkV()"></div>
       <div class="field"><label>الحالة</label>
         <select id="fStatus" dir="rtl">
@@ -779,6 +801,58 @@ function today(){return new Date().toISOString().split('T')[0];}
 function fmtS(d){return new Date(d+'T00:00:00').toLocaleDateString('ar-SA',{day:'numeric',month:'short'});}
 function fmtL(d){return new Date(d+'T00:00:00').toLocaleDateString('ar-SA',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
 function fmtLD(d){return new Date(d+'T00:00:00').toLocaleDateString('ar-SA',{weekday:'short',year:'numeric',month:'long',day:'numeric'});}
+
+function toHijri(dateStr){
+  try{
+    var d=new Date(dateStr+'T00:00:00');
+    return d.toLocaleDateString('ar-SA-u-ca-islamic',{year:'numeric',month:'long',day:'numeric'});
+  }catch(e){
+    // Fallback approximate conversion
+    var d=new Date(dateStr+'T00:00:00');
+    var jd=Math.floor(d.getTime()/86400000)+2440588;
+    var l=jd-1948440+10632;var n=Math.floor((l-1)/10631);l=l-10631*n+354;
+    var j=Math.floor((10985-l)/5965);l=l-Math.floor((5544-10816*j)/900);
+    var i=Math.floor(l/11);l=l-29*i-Math.floor((l-1)/2);
+    if(l>354){i++;l-=354;}
+    var hYear=(30*n+i+j-30);
+    var months=['محرم','صفر','ربيع الأول','ربيع الثاني','جمادى الأولى','جمادى الثانية','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'];
+    var m=Math.ceil(l/29.5);m=Math.min(m,12);
+    return l+' '+months[m-1]+' '+hYear+' هـ';
+  }
+}
+
+function updateDateInfo(val){
+  var box=document.getElementById('dateInfoBox');
+  var dayEl=document.getElementById('dateDay');
+  var gregEl=document.getElementById('dateGreg');
+  var hijriEl=document.getElementById('dateHijri');
+  if(!val||!box){return;}
+  var d=new Date(val+'T00:00:00');
+  var dayNames=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+  var dayName=dayNames[d.getDay()];
+  var todayStr=today();
+  var label=val===todayStr?' (اليوم)':val===addDays(todayStr,1)?' (الغد)':'';
+  box.style.display='block';
+  dayEl.textContent=dayName+label;
+  gregEl.textContent=d.toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});
+  hijriEl.textContent=toHijri(val);
+}
+
+function addDays(dateStr,n){
+  var d=new Date(dateStr+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];
+}
+
+function setDateToday(){
+  var td=today();
+  var el=document.getElementById('fDate');
+  if(el){el.value=td;chkV();updateDateInfo(td);}
+}
+
+function setDateTomorrow(){
+  var tm=addDays(today(),1);
+  var el=document.getElementById('fDate');
+  if(el){el.value=tm;chkV();updateDateInfo(tm);}
+}
 function fmtHijri(d){
   // Returns short Hijri date for a Gregorian YYYY-MM-DD
   try{
@@ -2264,7 +2338,7 @@ function confDel(){delTgt=detId;document.getElementById('dlg').classList.remove(
    FORM
 ═══════════════════════════════════════════════════════════ */
 function openAdd(){editId=null;curPrio='none';curTags=[];document.getElementById('formTitle').textContent='جلسة جديدة';document.getElementById('btnSave').textContent='حفظ الجلسة';['fNum','fRef','fClient','fCourt','fRoom','fPlnt','fDfnd','fNotes','fMeetUrl'].forEach(function(i){var el=document.getElementById(i);if(el)el.value='';});document.getElementById('fType').value='جنائية';document.getElementById('fStatus').value='scheduled';document.getElementById('fDate').value='';document.getElementById('fTime').value='';document.getElementById('btnSave').disabled=true;setPrio('none');updMeetIcon('');var tp=document.getElementById('tagsPicker');if(tp)tp.innerHTML=renderTagsPicker([]);document.getElementById('formSheet').classList.remove('hid');}
-function openEdit(s){editId=s.id;curPrio=s.priority||'none';curTags=(s.tags||[]).slice();document.getElementById('formTitle').textContent='تعديل الجلسة';document.getElementById('btnSave').textContent='💾 حفظ التعديلات';document.getElementById('fNum').value=s.num;document.getElementById('fType').value=s.type;document.getElementById('fCourt').value=s.court||'';document.getElementById('fRoom').value=s.room||'';document.getElementById('fMeetUrl').value=s.meetUrl||'';document.getElementById('fPlnt').value=s.plnt||'';document.getElementById('fDfnd').value=s.dfnd||'';document.getElementById('fDate').value=s.date;document.getElementById('fTime').value=s.time;document.getElementById('fStatus').value=s.status;document.getElementById('fNotes').value=s.notes||'';var fRef=document.getElementById('fRef');if(fRef)fRef.value=s.ref||'';var fClient=document.getElementById('fClient');if(fClient)fClient.value=s.client||'';document.getElementById('btnSave').disabled=false;setPrio(s.priority||'none');updMeetIcon(s.meetUrl||'');var tp=document.getElementById('tagsPicker');if(tp)tp.innerHTML=renderTagsPicker(s.tags||[]);document.getElementById('formSheet').classList.remove('hid');}
+function openEdit(s){editId=s.id;curPrio=s.priority||'none';curTags=(s.tags||[]).slice();document.getElementById('formTitle').textContent='تعديل الجلسة';document.getElementById('btnSave').textContent='💾 حفظ التعديلات';document.getElementById('fNum').value=s.num;document.getElementById('fType').value=s.type;document.getElementById('fCourt').value=s.court||'';document.getElementById('fRoom').value=s.room||'';document.getElementById('fMeetUrl').value=s.meetUrl||'';document.getElementById('fPlnt').value=s.plnt||'';document.getElementById('fDfnd').value=s.dfnd||'';document.getElementById('fDate').value=s.date;document.getElementById('fTime').value=s.time;document.getElementById('fStatus').value=s.status;document.getElementById('fNotes').value=s.notes||'';var fRef=document.getElementById('fRef');if(fRef)fRef.value=s.ref||'';var fClient=document.getElementById('fClient');if(fClient)fClient.value=s.client||'';document.getElementById('btnSave').disabled=false;setPrio(s.priority||'none');updMeetIcon(s.meetUrl||'');var tp=document.getElementById('tagsPicker');if(tp)tp.innerHTML=renderTagsPicker(s.tags||[]);document.getElementById('formSheet').classList.remove('hid');setTimeout(function(){updateDateInfo(s.date);},50);}
 function closeForm(){document.getElementById('formSheet').classList.add('hid');editId=null;}
 function chkV(){var ok=document.getElementById('fNum').value.trim()&&document.getElementById('fCourt').value.trim()&&document.getElementById('fDate').value&&document.getElementById('fTime').value;document.getElementById('btnSave').disabled=!ok;}
 
