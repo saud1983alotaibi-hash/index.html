@@ -864,7 +864,7 @@ function updateDateInfo(val){
   var dayNames=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
   var dayName=dayNames[d.getDay()];
   var todayStr=today();
-  var label=val===todayStr?' — اليوم':val===addDays(todayStr,1)?' — الغد':'';
+  var label='';
   box.style.display='block';
   if(dayEl)dayEl.textContent='يوم '+dayName+label;
   if(gregEl)gregEl.textContent=d.toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});
@@ -873,6 +873,63 @@ function updateDateInfo(val){
 function addDays(dateStr,n){
   var d=new Date(dateStr+'T00:00:00');d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];
 }
+
+function detGregChange(id,val){
+  if(!val)return;
+  // Update Hijri field
+  var hEl=document.getElementById('detDateHijri');
+  if(hEl){
+    try{
+      var d=new Date(val+'T00:00:00');
+      var h=d.toLocaleDateString('en-SA-u-ca-islamic-nu-latn',{year:'numeric',month:'2-digit',day:'2-digit'});
+      var p=h.split('/');
+      hEl.value=p.length===3?p[2]+'/'+p[0]+'/'+p[1]:h;
+    }catch(e){}
+  }
+  // Update day label
+  var dayEl=document.getElementById('detDateDay_'+id);
+  if(dayEl){
+    var d2=new Date(val+'T00:00:00');
+    var days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+    var label='';
+    dayEl.textContent='يوم '+days[d2.getDay()]+label+' — '+d2.toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});
+  }
+  // Save to session
+  var s=data.find(function(x){return x.id===id;});
+  if(s){s.date=val;dbPut(s);}
+}
+
+function detHijriChange(id,val){
+  if(!val||val.length<8)return;
+  var parts=val.replace(/[٠-٩]/g,function(d){return d.charCodeAt(0)-1632;}).split('/');
+  if(parts.length!==3)return;
+  var hy=parseInt(parts[0]),hm=parseInt(parts[1]),hd=parseInt(parts[2]);
+  if(!hy||!hm||!hd)return;
+  try{
+    var approxGreg=new Date((hy-1)*354.367+622*365.25+hm*29.53+hd);
+    var best=approxGreg;
+    for(var i=-30;i<=30;i++){
+      var test=new Date(approxGreg.getTime()+i*86400000);
+      var testH=test.toLocaleDateString('en-SA-u-ca-islamic-nu-latn',{year:'numeric',month:'2-digit',day:'2-digit'});
+      var tp=testH.split('/');
+      if(tp.length===3&&parseInt(tp[2])===hy&&parseInt(tp[0])===hm&&parseInt(tp[1])===hd){best=test;break;}
+    }
+    var gregStr=best.toISOString().split('T')[0];
+    var gEl=document.getElementById('detDateGreg');
+    if(gEl)gEl.value=gregStr;
+    // Update day label
+    var dayEl=document.getElementById('detDateDay_'+id);
+    if(dayEl){
+      var days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+      var label='';
+      dayEl.textContent='يوم '+days[best.getDay()]+label+' — '+best.toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});
+    }
+    // Save to session
+    var s=data.find(function(x){return x.id===id;});
+    if(s){s.date=gregStr;dbPut(s);}
+  }catch(e){}
+}
+
 function setDateToday(){var td=today();var el=document.getElementById('fDate');if(el){el.value=td;chkV();updateDateInfo(td);gregToHijriInput(td);}}
 function setDateTomorrow(){var tm=addDays(today(),1);var el=document.getElementById('fDate');if(el){el.value=tm;chkV();updateDateInfo(tm);gregToHijriInput(tm);}}
 function fmtHijri(d){
@@ -2313,7 +2370,9 @@ function openDet(id){
   detId=id;
   document.getElementById('detNum').textContent=s.num;
   document.getElementById('detBadge').innerHTML=bdg(s.status);
-  var rows=[['نوع القضية',s.type],['الأهمية',ptag(s.priority||'none')],['🏛️ المحكمة',s.court||'—'],['المدعي',s.plnt||'—'],['المدعى عليه',s.dfnd||'—'],['التاريخ الميلادي',fmtLD(s.date)],['التاريخ الهجري',s.hijriDate||fmtHijri(s.date)],['الوقت',s.time],['القاعة',s.room||'—']];
+  var rows=[['نوع القضية',s.type],['الأهمية',ptag(s.priority||'none')],['🏛️ المحكمة',s.court||'—'],['المدعي',s.plnt||'—'],['المدعى عليه',s.dfnd||'—']];
+  if(s.time)rows.push(['الوقت',s.time]);
+  if(s.room)rows.push(['القاعة',s.room]);
   if(s.notes)rows.push(['ملاحظات',s.notes]);
   if(s.tags&&s.tags.length)rows.push(['الوسوم',tagsHTML(s.tags)]);
   if(s.meetUrl)rows.push(['🎥 الاجتماع',meetBadge(s)]);
@@ -2323,6 +2382,21 @@ function openDet(id){
   if(s.meetUrl)b+=meetJoinBtn(s,'big');
 
   b+=rows.map(function(r){return'<div class="det-row"><span class="det-key">'+r[0]+'</span><span class="det-val">'+r[1]+'</span></div>';}).join('');
+
+  // ── Interactive dual date fields ──
+  b+='<div style="background:var(--surface2);border:1px solid var(--gold-a20);border-radius:var(--r-md);padding:12px;margin:10px 0">';
+  b+='<div style="font-size:11px;font-weight:700;color:var(--gold2);margin-bottom:10px">📅 تاريخ الجلسة</div>';
+  b+='<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';
+  // Gregorian
+  b+='<div><label style="font-size:9px;color:var(--text3);font-weight:700;display:block;margin-bottom:4px;letter-spacing:.05em">ميلادي</label>';
+  b+='<input type="date" id="detDateGreg" value="'+s.date+'" style="width:100%;background:var(--surface3);border:1.5px solid var(--border);border-radius:var(--r-sm);padding:9px;font-size:12px;color:var(--text);color-scheme:dark;font-family:Tajawal,sans-serif" oninput="detGregChange('+s.id+',this.value)"></div>';
+  // Hijri
+  b+='<div><label style="font-size:9px;color:var(--text3);font-weight:700;display:block;margin-bottom:4px;letter-spacing:.05em">هجري</label>';
+  b+='<input type="text" id="detDateHijri" value="'+(function(){try{var d=new Date(s.date+'T00:00:00');return d.toLocaleDateString('en-SA-u-ca-islamic-nu-latn',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/(\d+)\/(\d+)\/(\d+)/,'$3/$1/$2');}catch(e){return '';}}())+'" placeholder="YYYY/MM/DD" dir="ltr" style="width:100%;background:var(--surface3);border:1.5px solid var(--gold-a20);border-radius:var(--r-sm);padding:9px;font-size:12px;color:var(--gold2);font-family:Tajawal,sans-serif" oninput="detHijriChange('+s.id+',this.value)"></div>';
+  b+='</div>';
+  b+='<div id="detDateDay_'+s.id+'" style="margin-top:8px;font-size:11px;color:var(--text2);font-weight:600">'+
+    (function(){var d=new Date(s.date+'T00:00:00');var days=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];return'يوم '+days[d.getDay()]+' — '+d.toLocaleDateString('ar-SA',{day:'numeric',month:'long',year:'numeric'});})()+'</div>';
+  b+='</div>';
 
   // Ask AI about this session
   b+='<button onclick="askAIAboutSession('+s.id+')" style="width:100%;background:rgba(16,163,127,0.1);color:#2ecc9a;border:1px solid rgba(16,163,127,0.25);border-radius:var(--r-md);padding:11px;font-weight:700;font-size:12px;cursor:pointer;margin:12px 0;display:flex;align-items:center;justify-content:center;gap:7px">⚖️ اسأل سعود عن هذه القضية</button>';
